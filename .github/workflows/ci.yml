@@ -31,7 +31,6 @@ on:
 jobs:
   publish:
     if: |
-      github.repository == 'qdm12/gluetun' &&
       (
         github.event_name == 'push' ||
         github.event_name == 'release' ||
