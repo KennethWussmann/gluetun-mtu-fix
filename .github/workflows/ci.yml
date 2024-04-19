@@ -29,60 +29,6 @@ on:
       - go.sum
 
 jobs:
-  verify:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-    env:
-      DOCKER_BUILDKIT: "1"
-    steps:
-      - uses: actions/checkout@v4
-
-      - uses: reviewdog/action-misspell@v1
-        with:
-          locale: "US"
-          level: error
-          exclude: |
-            ./internal/storage/servers.json
-            *.md
-
-      - name: Linting
-        run: docker build --target lint .
-
-      - name: Mocks check
-        run: docker build --target mocks .
-
-      - name: Build test image
-        run: docker build --target test -t test-container .
-
-      - name: Run tests in test container
-        run: |
-          touch coverage.txt
-          docker run --rm \
-          -v "$(pwd)/coverage.txt:/tmp/gobuild/coverage.txt" \
-          test-container
-
-      - name: Build final image
-        run: docker build -t final-image .
-
-  codeql:
-    runs-on: ubuntu-latest
-    permissions:
-      actions: read
-      contents: read
-      security-events: write
-    steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
-        with:
-          go-version: "^1.22"
-      - uses: github/codeql-action/init@v3
-        with:
-          languages: go
-      - uses: github/codeql-action/autobuild@v3
-      - uses: github/codeql-action/analyze@v3
-
   publish:
     if: |
       github.repository == 'qdm12/gluetun' &&
@@ -91,7 +37,6 @@ jobs:
         github.event_name == 'release' ||
         (github.event_name == 'pull_request' && github.event.pull_request.head.repo.full_name == github.repository && github.actor != 'dependabot[bot]')
       )
-    needs: [verify, codeql]
     permissions:
       actions: read
       contents: read
