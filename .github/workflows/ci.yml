@@ -109,9 +109,7 @@ jobs:
           flavor: |
             latest=${{ github.ref == format('refs/heads/{0}', github.event.repository.default_branch) }}
           images: |
-            ghcr.io/qdm12/gluetun
-            qmcgaw/gluetun
-            qmcgaw/private-internet-access
+            ghcr.io/kennethwussmann/gluetun-mtu-fix
           tags: |
             type=ref,event=pr
             type=semver,pattern=v{{major}}.{{minor}}.{{patch}}
@@ -121,11 +119,6 @@ jobs:
 
       - uses: docker/setup-qemu-action@v3
       - uses: docker/setup-buildx-action@v3
-
-      - uses: docker/login-action@v3
-        with:
-          username: qmcgaw
-          password: ${{ secrets.DOCKERHUB_PASSWORD }}
 
       - uses: docker/login-action@v3
         with:
